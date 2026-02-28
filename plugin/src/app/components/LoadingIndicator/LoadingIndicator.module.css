@@ -1,0 +1,25 @@
+.container {
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+  flex-shrink: 0;
+  overflow: hidden;
+  color: #D97757;
+}
+
+.sprite {
+  display: block;
+}
+
+.animated {
+  animation: scroll 0.9s steps(9) infinite;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-216px);
+  }
+}

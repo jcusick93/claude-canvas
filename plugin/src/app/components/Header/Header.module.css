@@ -1,0 +1,20 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border-default);
+  flex-shrink: 0;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-text-loud);
+}
+
+.statusLabel {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-left: auto;
+}

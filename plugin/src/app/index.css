@@ -1,0 +1,55 @@
+@font-face {
+  font-family: 'Anthropic Sans';
+  src: url('./fonts/Anthropic-Sans-Regular.woff2') format('woff2-variations');
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Anthropic Serif';
+  src: url('./fonts/Anthropic-Serif-Regular.woff2') format('woff2-variations');
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --color-bg: #faf9f5;
+  --color-text: #000;
+  --color-bubble: #f0eee6;
+  --color-input-bg: #fff;
+  --color-input-border: rgba(0, 0, 0, 0.11);
+  --color-input-border-focus: rgba(0, 0, 0, 0.25);
+  --color-placeholder: #8a8578;
+  --color-system: #8a8578;
+}
+
+.figma-dark {
+  --color-bg: #262624;
+  --color-text: #e8e4de;
+  --color-bubble: #141413;
+  --color-input-bg: #141413;
+  --color-input-border: rgba(255, 255, 255, 0.11);
+  --color-input-border-focus: rgba(255, 255, 255, 0.25);
+  --color-placeholder: #6b6560;
+  --color-system: #6b6560;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Anthropic Sans', -apple-system, sans-serif;
+  font-weight: 360;
+  font-size: 16px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
