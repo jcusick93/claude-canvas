@@ -48,10 +48,45 @@ function buildTree(node: BaseNode, depth = 0): Record<string, unknown> {
 // Handle requests from the UI iframe
 figma.ui.onmessage = async (msg: {
   type: string;
-  requestId: string;
-  action: string;
-  params: Record<string, unknown>;
+  requestId?: string;
+  action?: string;
+  params?: Record<string, unknown>;
+  key?: string;
+  value?: unknown;
 }) => {
+  if (msg.type === "open_external") {
+    const { url } = msg as unknown as { type: string; url: string };
+    if (url) figma.openExternal(url);
+    return;
+  }
+
+  // Handle clientStorage requests
+  if (msg.type === "storage_request") {
+    const { requestId, action, key, value } = msg as {
+      requestId: string; action: string; key: string; value?: unknown;
+    };
+    try {
+      let data: unknown;
+      switch (action) {
+        case "get":
+          data = await figma.clientStorage.getAsync(key);
+          break;
+        case "set":
+          await figma.clientStorage.setAsync(key, value);
+          break;
+        case "delete":
+          await figma.clientStorage.deleteAsync(key);
+          break;
+        default:
+          throw new Error(`Unknown storage action: ${action}`);
+      }
+      figma.ui.postMessage({ type: "storage_result", requestId, data });
+    } catch (err: any) {
+      figma.ui.postMessage({ type: "storage_result", requestId, error: err.message });
+    }
+    return;
+  }
+
   if (msg.type !== "figma_request") return;
 
   const { requestId, action, params } = msg;
@@ -134,7 +169,7 @@ figma.ui.onmessage = async (msg: {
           name?: string; fillColor?: { r: number; g: number; b: number };
           text?: string; fontSize?: number;
         };
-        const target = figma.getNodeById(nodeId);
+        const target = await figma.getNodeByIdAsync(nodeId);
         if (!target || target.type === "DOCUMENT" || target.type === "PAGE") {
           throw new Error(`Node not found: ${nodeId}`);
         }
@@ -143,11 +178,11 @@ figma.ui.onmessage = async (msg: {
         if (props.x !== undefined) sceneNode.x = props.x;
         if (props.y !== undefined) sceneNode.y = props.y;
         if (props.width !== undefined && props.height !== undefined && "resize" in sceneNode) {
-          (sceneNode as GeometryMixin).resize(props.width, props.height);
+          (sceneNode as SceneNode & { resize(w: number, h: number): void }).resize(props.width, props.height);
         } else if (props.width !== undefined && "resize" in sceneNode) {
-          (sceneNode as GeometryMixin).resize(props.width, ("height" in sceneNode ? (sceneNode as any).height : 100));
+          (sceneNode as SceneNode & { resize(w: number, h: number): void }).resize(props.width, ("height" in sceneNode ? (sceneNode as any).height : 100));
         } else if (props.height !== undefined && "resize" in sceneNode) {
-          (sceneNode as GeometryMixin).resize(("width" in sceneNode ? (sceneNode as any).width : 100), props.height);
+          (sceneNode as SceneNode & { resize(w: number, h: number): void }).resize(("width" in sceneNode ? (sceneNode as any).width : 100), props.height);
         }
         if (props.name) sceneNode.name = props.name;
         if (props.fillColor && "fills" in sceneNode) {
@@ -165,7 +200,7 @@ figma.ui.onmessage = async (msg: {
 
       case "create_component": {
         const { nodeId } = params as { nodeId: string };
-        const target = figma.getNodeById(nodeId);
+        const target = await figma.getNodeByIdAsync(nodeId);
         if (!target || target.type === "DOCUMENT" || target.type === "PAGE") {
           throw new Error(`Node not found: ${nodeId}`);
         }
@@ -179,7 +214,7 @@ figma.ui.onmessage = async (msg: {
           nodeId: string;
           variants: Array<{ name: string; fillColor?: { r: number; g: number; b: number } }>;
         };
-        const source = figma.getNodeById(nodeId);
+        const source = await figma.getNodeByIdAsync(nodeId);
         if (!source || source.type !== "COMPONENT") {
           throw new Error(`Component not found: ${nodeId}`);
         }
@@ -211,7 +246,7 @@ figma.ui.onmessage = async (msg: {
 
       case "delete_element": {
         const { nodeId } = params as { nodeId: string };
-        const target = figma.getNodeById(nodeId);
+        const target = await figma.getNodeByIdAsync(nodeId);
         if (!target || target.type === "DOCUMENT" || target.type === "PAGE") {
           throw new Error(`Node not found: ${nodeId}`);
         }
@@ -224,20 +259,20 @@ figma.ui.onmessage = async (msg: {
       // --- Styles ---
 
       case "get_local_styles": {
-        const paintStyles = figma.getLocalPaintStyles().map(s => ({
+        const paintStyles = (await figma.getLocalPaintStylesAsync()).map(s => ({
           id: s.id, name: s.name, type: "PAINT",
           paints: JSON.parse(JSON.stringify(s.paints)),
         }));
-        const textStyles = figma.getLocalTextStyles().map(s => ({
+        const textStyles = (await figma.getLocalTextStylesAsync()).map(s => ({
           id: s.id, name: s.name, type: "TEXT",
           fontSize: s.fontSize, fontName: s.fontName,
           letterSpacing: s.letterSpacing, lineHeight: s.lineHeight,
         }));
-        const effectStyles = figma.getLocalEffectStyles().map(s => ({
+        const effectStyles = (await figma.getLocalEffectStylesAsync()).map(s => ({
           id: s.id, name: s.name, type: "EFFECT",
           effects: JSON.parse(JSON.stringify(s.effects)),
         }));
-        const gridStyles = figma.getLocalGridStyles().map(s => ({
+        const gridStyles = (await figma.getLocalGridStylesAsync()).map(s => ({
           id: s.id, name: s.name, type: "GRID",
           grids: JSON.parse(JSON.stringify(s.layoutGrids)),
         }));
@@ -299,7 +334,7 @@ figma.ui.onmessage = async (msg: {
         const { nodeId, styleId, styleType } = params as {
           nodeId: string; styleId: string; styleType: string;
         };
-        const target = figma.getNodeById(nodeId) as SceneNode;
+        const target = await figma.getNodeByIdAsync(nodeId) as SceneNode;
         if (!target) throw new Error(`Node not found: ${nodeId}`);
         switch (styleType) {
           case "PAINT":
@@ -330,12 +365,12 @@ figma.ui.onmessage = async (msg: {
       // --- Variables & Tokens ---
 
       case "get_local_variables": {
-        const collections = figma.variables.getLocalVariableCollections().map(c => ({
+        const collections = (await figma.variables.getLocalVariableCollectionsAsync()).map(c => ({
           id: c.id, name: c.name,
           modes: c.modes, defaultModeId: c.defaultModeId,
           variableIds: c.variableIds,
         }));
-        const variables = figma.variables.getLocalVariables().map(v => ({
+        const variables = (await figma.variables.getLocalVariablesAsync()).map(v => ({
           id: v.id, name: v.name,
           resolvedType: v.resolvedType,
           valuesByMode: JSON.parse(JSON.stringify(v.valuesByMode)),
@@ -344,19 +379,143 @@ figma.ui.onmessage = async (msg: {
         break;
       }
 
-      case "create_variable_collection": {
-        const { name: collName } = params as { name: string };
-        const collection = figma.variables.createVariableCollection(collName);
-        result = { id: collection.id, name: collection.name, defaultModeId: collection.defaultModeId };
-        break;
-      }
-
-      case "create_variable": {
-        const { collectionId, name: varName, resolvedType } = params as {
-          collectionId: string; name: string; resolvedType: VariableResolvedDataType;
+      case "modify_variables": {
+        const {
+          variableCollections = [],
+          variableModes = [],
+          variables = [],
+          variableModeValues = [],
+        } = params as {
+          variableCollections?: Array<{
+            action: string; id?: string; name?: string; hiddenFromPublishing?: boolean;
+          }>;
+          variableModes?: Array<{
+            action: string; variableCollectionId: string; modeId?: string; name?: string;
+          }>;
+          variables?: Array<{
+            action: string; id?: string; variableCollectionId?: string; name?: string;
+            resolvedType?: VariableResolvedDataType; description?: string;
+            hiddenFromPublishing?: boolean; scopes?: string[];
+            codeSyntax?: { WEB?: string; ANDROID?: string; iOS?: string };
+          }>;
+          variableModeValues?: Array<{
+            variableId: string; modeId: string; value: unknown;
+          }>;
         };
-        const variable = figma.variables.createVariable(varName, collectionId, resolvedType);
-        result = { id: variable.id, name: variable.name, resolvedType: variable.resolvedType };
+
+        const tempIdToRealId: Record<string, string> = {};
+        const resolveId = (id: string) => tempIdToRealId[id] || id;
+
+        // 1. Variable collections
+        for (const op of variableCollections) {
+          switch (op.action) {
+            case "CREATE": {
+              const coll = figma.variables.createVariableCollection(op.name!);
+              if (op.hiddenFromPublishing !== undefined) coll.hiddenFromPublishing = op.hiddenFromPublishing;
+              if (op.id) {
+                tempIdToRealId[op.id] = coll.id;
+                // Also map the default mode
+                tempIdToRealId[`${op.id}:defaultMode`] = coll.defaultModeId;
+              }
+              break;
+            }
+            case "UPDATE": {
+              const coll = await figma.variables.getVariableCollectionByIdAsync(resolveId(op.id!));
+              if (!coll) throw new Error(`Collection not found: ${op.id}`);
+              if (op.name !== undefined) coll.name = op.name;
+              if (op.hiddenFromPublishing !== undefined) coll.hiddenFromPublishing = op.hiddenFromPublishing;
+              break;
+            }
+            case "DELETE": {
+              const coll = await figma.variables.getVariableCollectionByIdAsync(resolveId(op.id!));
+              if (!coll) throw new Error(`Collection not found: ${op.id}`);
+              coll.remove();
+              break;
+            }
+          }
+        }
+
+        // 2. Variable modes
+        for (const op of variableModes) {
+          const collId = resolveId(op.variableCollectionId);
+          const coll = await figma.variables.getVariableCollectionByIdAsync(collId);
+          if (!coll) throw new Error(`Collection not found: ${op.variableCollectionId}`);
+
+          switch (op.action) {
+            case "CREATE": {
+              const modeId = coll.addMode(op.name!);
+              if (op.modeId) tempIdToRealId[op.modeId] = modeId;
+              break;
+            }
+            case "UPDATE": {
+              const realModeId = resolveId(op.modeId!);
+              coll.renameMode(realModeId, op.name!);
+              break;
+            }
+            case "DELETE": {
+              const realModeId = resolveId(op.modeId!);
+              coll.removeMode(realModeId);
+              break;
+            }
+          }
+        }
+
+        // 3. Variables
+        for (const op of variables) {
+          switch (op.action) {
+            case "CREATE": {
+              const collId = resolveId(op.variableCollectionId!);
+              const v = figma.variables.createVariable(op.name!, collId, op.resolvedType!);
+              if (op.id) tempIdToRealId[op.id] = v.id;
+              if (op.description !== undefined) v.description = op.description;
+              if (op.hiddenFromPublishing !== undefined) v.hiddenFromPublishing = op.hiddenFromPublishing;
+              if (op.scopes) v.scopes = op.scopes as VariableScope[];
+              if (op.codeSyntax) {
+                if (op.codeSyntax.WEB) v.setVariableCodeSyntax("WEB", op.codeSyntax.WEB);
+                if (op.codeSyntax.ANDROID) v.setVariableCodeSyntax("ANDROID", op.codeSyntax.ANDROID);
+                if (op.codeSyntax.iOS) v.setVariableCodeSyntax("iOS", op.codeSyntax.iOS);
+              }
+              break;
+            }
+            case "UPDATE": {
+              const v = await figma.variables.getVariableByIdAsync(resolveId(op.id!));
+              if (!v) throw new Error(`Variable not found: ${op.id}`);
+              if (op.name !== undefined) v.name = op.name;
+              if (op.description !== undefined) v.description = op.description;
+              if (op.hiddenFromPublishing !== undefined) v.hiddenFromPublishing = op.hiddenFromPublishing;
+              if (op.scopes) v.scopes = op.scopes as VariableScope[];
+              if (op.codeSyntax) {
+                if (op.codeSyntax.WEB) v.setVariableCodeSyntax("WEB", op.codeSyntax.WEB);
+                if (op.codeSyntax.ANDROID) v.setVariableCodeSyntax("ANDROID", op.codeSyntax.ANDROID);
+                if (op.codeSyntax.iOS) v.setVariableCodeSyntax("iOS", op.codeSyntax.iOS);
+              }
+              break;
+            }
+            case "DELETE": {
+              const v = await figma.variables.getVariableByIdAsync(resolveId(op.id!));
+              if (!v) throw new Error(`Variable not found: ${op.id}`);
+              v.remove();
+              break;
+            }
+          }
+        }
+
+        // 4. Variable mode values
+        for (const entry of variableModeValues) {
+          const varId = resolveId(entry.variableId);
+          const modeId = resolveId(entry.modeId);
+          const v = await figma.variables.getVariableByIdAsync(varId);
+          if (!v) throw new Error(`Variable not found: ${entry.variableId}`);
+
+          let val = entry.value;
+          // Resolve alias references
+          if (val && typeof val === "object" && (val as any).type === "VARIABLE_ALIAS") {
+            val = { type: "VARIABLE_ALIAS", id: resolveId((val as any).id) } as VariableAlias;
+          }
+          v.setValueForMode(modeId, val as VariableValue);
+        }
+
+        result = { success: true, tempIdToRealId };
         break;
       }
 
@@ -364,9 +523,9 @@ figma.ui.onmessage = async (msg: {
         const { nodeId, variableId, field } = params as {
           nodeId: string; variableId: string; field: string;
         };
-        const target = figma.getNodeById(nodeId) as SceneNode;
+        const target = await figma.getNodeByIdAsync(nodeId) as SceneNode;
         if (!target) throw new Error(`Node not found: ${nodeId}`);
-        const variable = figma.variables.getVariableById(variableId);
+        const variable = await figma.variables.getVariableByIdAsync(variableId);
         if (!variable) throw new Error(`Variable not found: ${variableId}`);
 
         if (field === "fill") {
@@ -397,7 +556,7 @@ figma.ui.onmessage = async (msg: {
           primaryAxisAlignItems?: string; counterAxisAlignItems?: string;
           primaryAxisSizingMode?: string; counterAxisSizingMode?: string;
         };
-        const target = figma.getNodeById(nodeId) as FrameNode;
+        const target = await figma.getNodeByIdAsync(nodeId) as FrameNode;
         if (!target || !("layoutMode" in target)) throw new Error(`Frame not found: ${nodeId}`);
 
         if (direction) target.layoutMode = direction as "HORIZONTAL" | "VERTICAL";
@@ -420,11 +579,12 @@ figma.ui.onmessage = async (msg: {
 
       case "group_nodes": {
         const { nodeIds } = params as { nodeIds: string[] };
-        const nodes = nodeIds.map(id => {
-          const n = figma.getNodeById(id) as SceneNode;
+        const nodes: SceneNode[] = [];
+        for (const id of nodeIds) {
+          const n = await figma.getNodeByIdAsync(id) as SceneNode;
           if (!n) throw new Error(`Node not found: ${id}`);
-          return n;
-        });
+          nodes.push(n);
+        }
         const group = figma.group(nodes, figma.currentPage);
         result = { id: group.id, name: group.name };
         break;
@@ -432,11 +592,12 @@ figma.ui.onmessage = async (msg: {
 
       case "boolean_operation": {
         const { nodeIds, operation } = params as { nodeIds: string[]; operation: string };
-        const nodes = nodeIds.map(id => {
-          const n = figma.getNodeById(id) as SceneNode;
+        const nodes: SceneNode[] = [];
+        for (const id of nodeIds) {
+          const n = await figma.getNodeByIdAsync(id) as SceneNode;
           if (!n) throw new Error(`Node not found: ${id}`);
-          return n;
-        });
+          nodes.push(n);
+        }
         const boolOps: Record<string, "UNION" | "SUBTRACT" | "INTERSECT" | "EXCLUDE"> = {
           UNION: "UNION", SUBTRACT: "SUBTRACT", INTERSECT: "INTERSECT", EXCLUDE: "EXCLUDE",
         };
@@ -459,7 +620,7 @@ figma.ui.onmessage = async (msg: {
         const { componentId, x = 0, y = 0 } = params as {
           componentId: string; x?: number; y?: number;
         };
-        const comp = figma.getNodeById(componentId);
+        const comp = await figma.getNodeByIdAsync(componentId);
         if (!comp || comp.type !== "COMPONENT") throw new Error(`Component not found: ${componentId}`);
         const instance = (comp as ComponentNode).createInstance();
         instance.x = x as number;
@@ -475,7 +636,7 @@ figma.ui.onmessage = async (msg: {
         const { nodeId, format = "PNG", scale = 1 } = params as {
           nodeId: string; format?: string; scale?: number;
         };
-        const target = figma.getNodeById(nodeId) as SceneNode;
+        const target = await figma.getNodeByIdAsync(nodeId) as SceneNode;
         if (!target) throw new Error(`Node not found: ${nodeId}`);
 
         const settings: ExportSettings = format === "SVG"

@@ -1,13 +1,22 @@
 {
-  "name": "claude-canvas-mcp",
-  "version": "1.0.0",
+  "name": "claude-canvas-mcp-server",
+  "version": "0.1.0",
   "description": "MCP server for Claude to interact with Figma via the Claude Canvas plugin",
   "type": "module",
-  "bin": "dist/index.js",
+  "bin": {
+    "claude-canvas-mcp-server": "dist/index.js"
+  },
   "files": [
     "dist",
+    "scripts",
+    "README.md",
     "CLAUDE.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joshcusick/claude-canvas.git"
+  },
+  "homepage": "https://github.com/joshcusick/claude-canvas#readme",
   "engines": {
     "node": ">=18"
   },
@@ -22,7 +31,8 @@
   "scripts": {
     "build": "node esbuild.config.mjs",
     "dev": "node esbuild.config.mjs --watch",
-    "prepublishOnly": "node esbuild.config.mjs"
+    "prepublishOnly": "node esbuild.config.mjs",
+    "postinstall": "node scripts/postinstall.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",

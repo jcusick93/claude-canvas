@@ -16,10 +16,9 @@ function killStaleProcess(): void {
 
     for (const pid of pids) {
       try {
-        // Only kill node processes (avoid killing Figma or other apps)
         const cmd = execSync(`ps -p ${pid} -o command=`, { encoding: "utf-8" }).trim();
-        if (cmd.includes("claude-canvas")) {
-          log(`Killing stale claude-canvas process (PID ${pid})`);
+        if (cmd.includes("dist/index.js")) {
+          log(`Killing stale process (PID ${pid})`);
           process.kill(Number(pid), "SIGTERM");
         }
       } catch {
@@ -27,7 +26,6 @@ function killStaleProcess(): void {
       }
     }
 
-    // Brief pause to let the port free up
     execSync("sleep 0.5");
   } catch {
     // No process on port — nothing to kill
@@ -35,12 +33,13 @@ function killStaleProcess(): void {
 }
 
 export class WsServer {
-  private wss: WebSocketServer;
+  private wss: WebSocketServer | null = null;
   private client: WebSocket | null = null;
   public messageQueue = new MessageQueue();
   public requestManager = new RequestManager();
 
-  constructor() {
+  /** Call after MCP stdio is connected */
+  start(): void {
     killStaleProcess();
 
     this.wss = new WebSocketServer({ port: WS_PORT });

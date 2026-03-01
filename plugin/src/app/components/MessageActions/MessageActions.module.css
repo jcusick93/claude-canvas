@@ -1,0 +1,4 @@
+.root {
+  display: flex;
+  gap: var(--spacing-200);
+}

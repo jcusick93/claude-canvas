@@ -1,20 +1,35 @@
 .root {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: var(--color-bg-app);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--color-border-default);
-  flex-shrink: 0;
+  gap: var(--spacing-400);
+  padding: var(--spacing-800) var(--spacing-800) var(--spacing-800) 10px;
 }
-
-.title {
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--color-text-loud);
+.status {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-400);
 }
-
-.statusLabel {
-  font-size: 11px;
-  color: var(--color-text-muted);
-  margin-left: auto;
+.statusIcon {
+  display: flex;
+  align-items: center;
+}
+.connected {
+  color: var(--color-label-success);
+}
+.disconnected {
+  color: var(--color-label-error);
+}
+.label {
+  font-family: var(--font-family-productive);
+  font-size: var(--font-size-small);
+  line-height: 18px;
+  color: var(--color-label-medium);
 }

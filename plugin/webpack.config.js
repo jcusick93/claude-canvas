@@ -1,9 +1,31 @@
 const path = require("path");
+const fs = require("fs");
+const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const HtmlInlineScriptPlugin = require("html-inline-script-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HTMLInlineCSSWebpackPlugin =
   require("html-inline-css-webpack-plugin").default;
+
+const uiHtmlPath = path.resolve(__dirname, "dist", "ui.html");
+
+function readUiHtml() {
+  if (!fs.existsSync(uiHtmlPath)) {
+    return "<html><body><p>Build UI first.</p></body></html>";
+  }
+  return fs.readFileSync(uiHtmlPath, "utf8");
+}
+
+/** Ensures code.js rebuilds when ui.html changes (for watch mode) */
+function addUiHtmlDependencyPlugin() {
+  return {
+    apply(compiler) {
+      compiler.hooks.compilation.tap("AddUiHtmlDependency", (compilation) => {
+        compilation.fileDependencies.add(uiHtmlPath);
+      });
+    },
+  };
+}
 
 /** @type {import('webpack').Configuration} */
 const uiConfig = {
@@ -105,6 +127,22 @@ const codeConfig = {
   resolve: {
     extensions: [".ts", ".js"],
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      __html__: JSON.stringify(readUiHtml()),
+    }),
+    addUiHtmlDependencyPlugin(),
+  ],
 };
 
-module.exports = [uiConfig, codeConfig];
+/**
+ * Build order: UI must be built before code (so __html__ gets dist/ui.html).
+ * Use: webpack --env target=ui && webpack --env target=code
+ * Or: webpack --env target=ui (then) webpack --env target=code --watch
+ * @param {{ target?: string }} env
+ */
+module.exports = (env = {}) => {
+  if (env.target === "ui") return [uiConfig];
+  if (env.target === "code") return [codeConfig];
+  return [uiConfig, codeConfig];
+};

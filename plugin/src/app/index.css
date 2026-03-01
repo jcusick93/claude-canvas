@@ -14,26 +14,103 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Anthropic Mono';
+  src: url('./fonts/Anthropic-Mono-Variable.woff2') format('woff2-variations');
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --color-bg: #faf9f5;
-  --color-text: #000;
-  --color-bubble: #f0eee6;
-  --color-input-bg: #fff;
-  --color-input-border: rgba(0, 0, 0, 0.11);
-  --color-input-border-focus: rgba(0, 0, 0, 0.25);
-  --color-placeholder: #8a8578;
-  --color-system: #8a8578;
+  /* Background */
+  --color-bg-app: #faf9f5;
+  --color-bg-muted: #f0eee6;
+  --color-bg-input: #fff;
+  --color-bg-button-brand: #c6613f;
+  --color-bg-button-neutral: #f0eee6;
+
+  /* Label */
+  --color-label-heavy: #141413;
+  --color-label-medium: #3d3d3a;
+  --color-label-light: #73726c;
+  --color-label-brand: #D97757;
+  --color-label-code: #8A2424;
+  --color-label-success: #16A34A;
+  --color-label-error: #DC2626;
+
+  /* Border */
+  --color-border-light: rgba(74, 63, 52, 0.15);
+  --color-border-medium: rgba(74, 63, 52, 0.3);
+  --color-border-heavy: rgba(74, 63, 52, 0.4);
+
+  /* Shadow */
+  --shadow-ring-offset: 0 0 #0000;
+  --shadow-ring: 0 0 #0000;
+  --shadow-elevation: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* Radius */
+  --border-radius-small: 6px;
+  --border-radius-medium: 12px;
+  --border-radius-large: 20px;
+
+  /* Layout — heights for absolute-positioned header/footer */
+  /* header: 16px top + 32px content + 16px bottom = 64px */
+  --header-height: 64px;
+  /* footer: 4px top + 16px inputTop + 24px text + 8px inputBottom + 8px toolbarTop + 32px button + 16px toolbarBottom + 16px bottom + 2px border = 126px → measured from Figma = 150px */
+  --footer-height: 150px;
+  /* padding = component height + 16px gap */
+  --app-padding-top: calc(var(--header-height) + var(--spacing-200)); /* 64 + 4 = 68px */
+  --app-padding-bottom: calc(var(--footer-height) + var(--spacing-800)); /* 150 + 16 = 166px */
+
+  /* Spacing */
+  --spacing-200: 4px;
+  --spacing-300: 6px;
+  --spacing-400: 8px;
+  --spacing-500: 10px;
+  --spacing-600: 12px;
+  --spacing-800: 16px;
+  --spacing-1200: 24px;
+
+  /* Typography */
+  --font-family-productive: 'Anthropic Sans', -apple-system, sans-serif;
+  --font-family-expressive: 'Anthropic Serif', Georgia, serif;
+  --font-family-mono: 'Anthropic Mono', 'SF Mono', Menlo, Consolas, monospace;
+  --font-size-small: 14px;
+  --line-height-small: 24px;
+  --font-size-medium: 16px;
+  --line-height-medium: 28px;
+  --font-size-large: 20px;
+  --line-height-large: 30px;
+
+  /* Easing */
+  --ease-standard: cubic-bezier(.4, 0, .2, 1);
+
+  /* Transition durations */
+  --duration-fast: 0.15s;
+  --duration-medium: 0.2s;
+  --duration-slow: 0.25s;
 }
 
 .figma-dark {
-  --color-bg: #262624;
-  --color-text: #e8e4de;
-  --color-bubble: #141413;
-  --color-input-bg: #141413;
-  --color-input-border: rgba(255, 255, 255, 0.11);
-  --color-input-border-focus: rgba(255, 255, 255, 0.25);
-  --color-placeholder: #6b6560;
-  --color-system: #6b6560;
+  --color-bg-app: #262624;
+  --color-bg-muted: #141413;
+  --color-bg-input: #30302e;
+  --color-bg-button-brand: #c6613f;
+  --color-bg-button-brand-hover: #D97757;
+  --color-bg-button-neutral: #141413;
+
+  --color-label-heavy: #ffffff;
+  --color-label-medium: rgba(255, 255, 255, 0.7);
+  --color-label-light: rgba(255, 255, 255, 0.5);
+  --color-label-brand: #D97757;
+  --color-label-code: #FE8181;
+  --color-label-success: #4ADE80;
+  --color-label-error: #F87171;
+
+  --color-border-light: rgba(255, 255, 255, 0.11);
+  --color-border-medium: rgba(255, 255, 255, 0.25);
+  --color-border-heavy: rgba(255, 255, 255, 0.4);
 }
 
 * {
@@ -43,11 +120,12 @@
 }
 
 body {
-  font-family: 'Anthropic Sans', -apple-system, sans-serif;
+  font-family: var(--font-family-productive);
   font-weight: 360;
-  font-size: 16px;
-  background: var(--color-bg);
-  color: var(--color-text);
+  font-size: var(--font-size-medium);
+  line-height: var(--line-height-medium);
+  background: var(--color-bg-app);
+  color: var(--color-label-heavy);
   display: flex;
   flex-direction: column;
   height: 100vh;

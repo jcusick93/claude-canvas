@@ -1,0 +1,327 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity var(--duration-slow) var(--ease-standard);
+}
+
+.overlayVisible {
+  opacity: 1;
+}
+
+.panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 280px;
+  z-index: 21;
+  background: var(--color-bg-app);
+  transform: translateX(-100%);
+  transition: transform var(--duration-slow) var(--ease-standard);
+  overflow: hidden;
+  box-shadow: var(--shadow-ring-offset), var(--shadow-ring), var(--shadow-elevation);
+}
+
+.panelOpen {
+  transform: translateX(0);
+}
+
+/* Fixed header */
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-800) 10px var(--spacing-800) var(--spacing-800);
+  background: var(--color-bg-app);
+}
+
+.headerTitle {
+  font-family: var(--font-family-productive);
+  font-size: var(--font-size-medium);
+  font-weight: 500;
+  color: var(--color-label-heavy);
+}
+
+/* Scrollable area between header and footer */
+.scrollArea {
+  position: absolute;
+  top: var(--header-height);
+  bottom: 0;
+  padding-bottom: calc(64px + 16px); /* footer height (~64px) + 16px gap */
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.scrollArea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollArea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollArea::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+.scrollArea::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+:global(.figma-dark) .scrollArea {
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+:global(.figma-dark) .scrollArea::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+:global(.figma-dark) .scrollArea::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.sectionLabel {
+  font-family: var(--font-family-productive);
+  font-size: var(--font-size-small);
+  line-height: 28px;
+  color: var(--color-label-light);
+  padding: 0 var(--spacing-800);
+}
+
+.list {
+  padding: 0 var(--spacing-400);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-200);
+}
+
+/* Row: wraps the label button + more icon together */
+.chatRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-400);
+  min-height: 32px;
+  padding: 2px 2px 2px 8px;
+  border-radius: var(--border-radius-small);
+  transition: background var(--duration-fast) var(--ease-standard),
+    transform var(--duration-medium) var(--ease-standard);
+}
+
+/* Hovering the label button highlights the whole row */
+.chatRow:has(.chatLabel:hover) {
+  background: var(--color-bg-muted);
+}
+
+.chatRow:has(.chatLabel:active) {
+  transform: scale(0.97);
+}
+
+.chatRowActive {
+  background: var(--color-bg-muted);
+}
+
+/* Show the more button when row is hovered or active */
+.chatRow:hover .moreButton,
+.chatRowActive .moreButton {
+  opacity: 1;
+}
+
+.chatLabel {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-family-productive);
+  font-size: var(--font-size-small);
+  color: var(--color-label-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 24px;
+  padding: 0;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.chatLabel:hover {
+  color: var(--color-label-heavy);
+}
+
+.chatLabel:active {
+  color: var(--color-label-medium);
+}
+
+.menuAnchor {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.moreButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--border-radius-small);
+  color: var(--color-label-light);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard), background var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard);
+}
+
+.moreButton:hover {
+  background: var(--color-border-light);
+  color: var(--color-label-heavy);
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 30;
+  min-width: 120px;
+  background: var(--color-bg-app);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-small);
+  box-shadow: var(--shadow-ring-offset), var(--shadow-ring), var(--shadow-elevation);
+  padding: var(--spacing-200);
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-400);
+  width: 100%;
+  padding: var(--spacing-300) var(--spacing-400);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: var(--font-family-productive);
+  font-size: var(--font-size-small);
+  color: var(--color-label-error);
+  text-align: left;
+  transition: background var(--duration-fast) var(--ease-standard);
+}
+
+.menuItemIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.menuItem:hover {
+  background: var(--color-bg-muted);
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: var(--spacing-800) var(--spacing-400);
+  background: var(--color-bg-app);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.newChatButton {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-400);
+  width: 100%;
+  padding: 4px 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--border-radius-small);
+  font-family: var(--font-family-productive);
+  font-size: var(--font-size-small);
+  color: var(--color-label-medium);
+  transition: background var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-medium) var(--ease-standard);
+}
+
+.newChatButton:hover {
+  background: var(--color-bg-muted);
+  color: var(--color-label-heavy);
+}
+
+.newChatButton:active {
+  transform: scale(0.97);
+  color: var(--color-label-medium);
+}
+
+.iconContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 99px;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: transform var(--duration-medium) var(--ease-standard);
+}
+
+.newChatButton:hover .iconContainer {
+  transform: scale(1.05) rotate(-10deg);
+}
+
+.newChatButton:active .iconContainer {
+  transform: scale(1) rotate(0deg);
+}
+
+.stateLayer {
+  position: absolute;
+  inset: 0;
+  border-radius: 99px;
+  background: var(--color-label-heavy);
+  opacity: 0.15;
+}
+
+.newChatButton:hover .stateLayer {
+  opacity: 0.2;
+}
+
+.plusIcon {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.newChatLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 24px;
+  text-align: left;
+}
+
+.empty {
+  padding: var(--spacing-800);
+  text-align: center;
+  font-family: var(--font-family-productive);
+  font-size: var(--font-size-small);
+  color: var(--color-label-light);
+}

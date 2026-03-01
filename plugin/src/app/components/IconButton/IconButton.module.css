@@ -1,0 +1,74 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: var(--spacing-200);
+  border: none;
+  background: none;
+  border-radius: var(--border-radius-small);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1),
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.root:active {
+  transform: scale(0.95);
+}
+
+.root:disabled {
+  cursor: default;
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Primary — brand fill, white icon */
+.primary {
+  background: var(--color-bg-button-brand);
+  color: #fff;
+}
+
+.primary:hover {
+  background: var(--color-label-brand);
+}
+
+.primary:active {
+  background: var(--color-label-brand);
+}
+
+/* Secondary — border, no fill → muted fill on hover */
+.secondary {
+  border: 1px solid var(--color-border-medium);
+  color: var(--color-label-medium);
+}
+
+.secondary:hover {
+  background: var(--color-bg-muted);
+  border-color: var(--color-bg-muted);
+  color: var(--color-label-medium);
+}
+
+.secondary:active {
+  background: var(--color-bg-muted);
+  border-color: var(--color-bg-muted);
+  color: var(--color-label-heavy);
+}
+
+/* Tertiary — no fill, no border → muted fill on hover */
+.tertiary {
+  color: var(--color-label-light);
+}
+
+.tertiary:hover {
+  background: var(--color-bg-muted);
+  color: var(--color-label-medium);
+}
+
+.tertiary:active {
+  background: var(--color-bg-muted);
+  color: var(--color-label-heavy);
+}

@@ -1,10 +1,17 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-400);
+  min-height: 24px;
+}
+
 .container {
   width: 24px;
   height: 24px;
   min-height: 24px;
   flex-shrink: 0;
   overflow: hidden;
-  color: #D97757;
+  color: var(--color-label-brand);
 }
 
 .sprite {
@@ -13,6 +20,14 @@
 
 .animated {
   animation: scroll 0.9s steps(9) infinite;
+}
+
+.label {
+  font-family: var(--font-family-productive);
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+  color: var(--color-label-medium);
+  white-space: nowrap;
 }
 
 @keyframes scroll {

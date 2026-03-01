@@ -1,10 +1,11 @@
 {
   "name": "Claude Canvas",
-  "id": "claude-canvas-local",
+  "id": "1609844266347058170",
   "api": "1.0.0",
   "main": "dist/code.js",
   "ui": "dist/ui.html",
   "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
   "networkAccess": {
     "allowedDomains": ["none"],
     "devAllowedDomains": ["ws://localhost:8080"]

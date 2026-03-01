@@ -1,0 +1,41 @@
+.root {
+  position: absolute;
+  top: var(--header-height);
+  bottom: var(--footer-height);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-800);
+  padding: var(--spacing-800);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.burst {
+  width: 48px;
+  height: 48px;
+  color: var(--color-label-brand);
+  opacity: 0;
+  animation: fadeInUp 0.6s var(--ease-standard) 0.1s forwards;
+}
+
+.greeting {
+  font-family: var(--font-family-expressive);
+  font-size: var(--font-size-large);
+  line-height: var(--line-height-large);
+  color: var(--color-label-heavy);
+  opacity: 0;
+  animation: fadeInUp 0.6s var(--ease-standard) 0.25s forwards;
+}

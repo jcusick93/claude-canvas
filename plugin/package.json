@@ -2,11 +2,12 @@
   "name": "claude-canvas-plugin",
   "version": "1.0.0",
   "scripts": {
-    "build": "webpack --mode=production",
-    "dev": "webpack --mode=development --watch"
+    "build": "webpack --mode=production --env target=ui && webpack --mode=production --env target=code",
+    "dev": "webpack --mode=development --env target=ui && concurrently \"webpack --mode=development --env target=ui --watch\" \"webpack --mode=development --env target=code --watch\""
   },
   "dependencies": {
     "classnames": "^2.5.0",
+    "marked": "^17.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -14,6 +15,7 @@
     "@figma/plugin-typings": "^1.104.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "concurrently": "^9.1.2",
     "css-loader": "^7.1.0",
     "html-inline-css-webpack-plugin": "^1.11.2",
     "html-inline-script-webpack-plugin": "^3.2.0",

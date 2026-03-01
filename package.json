@@ -1,0 +1,19 @@
+{
+  "name": "claude-canvas",
+  "private": true,
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "build:server": "npm run build -w server",
+    "build:plugin": "npm run build -w plugin",
+    "dev": "concurrently --names server,plugin \"npm run dev -w server\" \"npm run dev -w plugin\"",
+    "dev:server": "npm run dev -w server",
+    "dev:plugin": "npm run dev -w plugin"
+  },
+  "workspaces": [
+    "server",
+    "plugin"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
