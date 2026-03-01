@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import cx from "classnames";
 import styles from "./Sidebar.module.css";
-import { SidebarIcon, PlusSmallIcon, MoreIcon, TrashIcon } from "../Icons/Icons";
+import { SidebarIcon, PlusSmallIcon, MoreIcon, TrashIcon, LogoIcon } from "../Icons/Icons";
 import { IconButton } from "../IconButton/IconButton";
 import type { ChatSession } from "../../types";
 
@@ -49,7 +49,7 @@ export function Sidebar({
       )}
       <div className={cx(styles.panel, open && styles.panelOpen)}>
         <div className={styles.header}>
-          <span className={styles.headerTitle}>Claude Canvas</span>
+          <LogoIcon className={styles.headerLogo} />
           <IconButton icon={<SidebarIcon />} label="Close sidebar" onClick={onClose} />
         </div>
         <div className={styles.scrollArea}>

@@ -1,6 +1,6 @@
 {
   "name": "claude-canvas-plugin",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "scripts": {
     "build": "webpack --mode=production --env target=ui && webpack --mode=production --env target=code",
     "dev": "webpack --mode=development --env target=ui && concurrently \"webpack --mode=development --env target=ui --watch\" \"webpack --mode=development --env target=code --watch\""

@@ -43,11 +43,9 @@
   background: var(--color-bg-app);
 }
 
-.headerTitle {
-  font-family: var(--font-family-productive);
-  font-size: var(--font-size-medium);
-  font-weight: 500;
-  color: var(--color-label-heavy);
+.headerLogo {
+  height: 32px;
+  width: auto;
 }
 
 /* Scrollable area between header and footer */
