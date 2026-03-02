@@ -37,7 +37,7 @@ If you prefer to configure it yourself, add to `~/.claude.json`:
 
 ## Usage
 
-1. Install the [Claude Canvas plugin](https://www.figma.com/community/plugin/claude-canvas) in Figma
+1. Install the [Claude Canvas plugin](https://www.figma.com/community/plugin/1609844266347058170/claude-canvas) in Figma
 2. Open the plugin in a Figma file
 3. Start Claude Code and tell it to `start canvas loop`
 4. Chat with Claude through the plugin — it can read and modify your Figma file
@@ -82,7 +82,7 @@ If you prefer to configure it yourself, add to `~/.claude.json`:
 
 - Node.js 18+
 - [Claude Code](https://claude.ai/claude-code) CLI
-- [Claude Canvas Figma plugin](https://www.figma.com/community/plugin/claude-canvas)
+- [Claude Canvas Figma plugin](https://www.figma.com/community/plugin/1609844266347058170/claude-canvas)
 
 ## License
 
