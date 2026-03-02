@@ -5,6 +5,7 @@ import { SidebarIcon, PlusSmallIcon, MoreIcon, TrashIcon, LogoIcon, GitHubIcon, 
 import { IconButton } from "../IconButton/IconButton";
 import { CollapseList } from "./CollapseList";
 import type { ChatSession } from "../../types";
+import { version } from "../../../../package.json";
 
 interface SidebarProps {
   open: boolean;
@@ -130,7 +131,7 @@ export function Sidebar({
             <span className={styles.footerLabel}>Feedback</span>
             <ArrowUpRightIcon className={styles.trailingIcon} />
           </a>
-          <span className={styles.version}>Version 0.1.0</span>
+          <span className={styles.version}>Version {version}</span>
         </div>
       </div>
     </>
