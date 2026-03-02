@@ -7,7 +7,7 @@
   "editorType": ["figma"],
   "documentAccess": "dynamic-page",
   "networkAccess": {
-    "allowedDomains": ["none"],
-    "devAllowedDomains": ["ws://localhost:8080"]
+    "allowedDomains": ["ws://localhost:8080"],
+    "reasoning": "Connects to a local MCP server via WebSocket to enable Claude Code to read and modify the Figma file. All communication stays on the user's machine."
   }
 }

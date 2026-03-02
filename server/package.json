@@ -1,6 +1,6 @@
 {
   "name": "claude-canvas-mcp-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server for Claude to interact with Figma via the Claude Canvas plugin",
   "type": "module",
   "bin": {
@@ -14,9 +14,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/joshcusick/claude-canvas.git"
+    "url": "git+https://github.com/jcusick93/claude-canvas.git"
   },
-  "homepage": "https://github.com/joshcusick/claude-canvas#readme",
+  "homepage": "https://github.com/jcusick93/claude-canvas#readme",
   "engines": {
     "node": ">=18"
   },
