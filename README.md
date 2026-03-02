@@ -33,10 +33,7 @@ This installs the MCP server and automatically registers it in your Claude Code 
 
 ### Figma Plugin
 
-Install the Claude Canvas plugin from the Figma Community (coming soon), or load it locally for development:
-
-1. In Figma, go to **Plugins > Development > Import plugin from manifest...**
-2. Select `plugin/manifest.json`
+Install the [Claude Canvas plugin](https://www.figma.com/community/plugin/1609844266347058170/claude-canvas) from the Figma Community.
 
 ## Usage
 
@@ -61,7 +58,7 @@ Install the Claude Canvas plugin from the Figma Community (coming soon), or load
 ## Development
 
 ```bash
-git clone https://github.com/anthropics/claude-canvas.git
+git clone https://github.com/jcusick93/claude-canvas.git
 cd claude-canvas
 npm install
 ```
