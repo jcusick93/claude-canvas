@@ -18,7 +18,7 @@ The Figma plugin for [Claude Canvas](https://github.com/jcusick93/claude-canvas)
 
 ### From Figma Community
 
-Install the Claude Canvas plugin from the [Figma Community](https://www.figma.com/community/plugin/claude-canvas) (coming soon).
+Install the Claude Canvas plugin from the [Figma Community](https://www.figma.com/community/plugin/1609844266347058170/claude-canvas).
 
 ### Local development
 
