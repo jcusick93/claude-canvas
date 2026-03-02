@@ -1,5 +1,7 @@
 # Claude Canvas Figma Plugin
 
+[![plugin version](https://img.shields.io/github/package-json/v/jcusick93/claude-canvas?filename=plugin%2Fpackage.json&label=plugin)](https://github.com/jcusick93/claude-canvas/tree/main/plugin)
+
 The Figma plugin for [Claude Canvas](https://github.com/jcusick93/claude-canvas) — a chat interface that lets Claude read and modify your Figma files directly.
 
 ## Features

@@ -1,4 +1,6 @@
 // Promise-based producer/consumer queue for chat messages from Figma
+const MAX_QUEUE_SIZE = 100;
+
 export class MessageQueue {
   private messages: string[] = [];
   private waiters: Array<(message: string) => void> = [];
@@ -7,9 +9,10 @@ export class MessageQueue {
     const waiter = this.waiters.shift();
     if (waiter) {
       waiter(message);
-    } else {
+    } else if (this.messages.length < MAX_QUEUE_SIZE) {
       this.messages.push(message);
     }
+    // Drop message silently if queue is full
   }
 
   dequeue(): Promise<string> {

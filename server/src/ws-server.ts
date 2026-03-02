@@ -1,22 +1,23 @@
 import { WebSocketServer, WebSocket } from "ws";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import { log } from "./logger.js";
 import { MessageQueue } from "./message-queue.js";
 import { RequestManager } from "./request-manager.js";
 import type { BridgeToPluginMessage, PluginToBridgeMessage } from "./types.js";
 
 const WS_PORT = 8080;
+const MAX_PAYLOAD = 1024 * 1024; // 1 MB
 
 function killStaleProcess(): void {
   try {
-    const pids = execSync(`lsof -ti :${WS_PORT}`, { encoding: "utf-8" })
+    const pids = execFileSync("lsof", ["-ti", `:${WS_PORT}`], { encoding: "utf-8" })
       .trim()
       .split("\n")
       .filter(Boolean);
 
     for (const pid of pids) {
       try {
-        const cmd = execSync(`ps -p ${pid} -o command=`, { encoding: "utf-8" }).trim();
+        const cmd = execFileSync("ps", ["-p", pid, "-o", "command="], { encoding: "utf-8" }).trim();
         if (cmd.includes("dist/index.js")) {
           log(`Killing stale process (PID ${pid})`);
           process.kill(Number(pid), "SIGTERM");
@@ -26,7 +27,7 @@ function killStaleProcess(): void {
       }
     }
 
-    execSync("sleep 0.5");
+    execFileSync("sleep", ["0.5"]);
   } catch {
     // No process on port — nothing to kill
   }
@@ -42,7 +43,11 @@ export class WsServer {
   start(): void {
     killStaleProcess();
 
-    this.wss = new WebSocketServer({ port: WS_PORT });
+    this.wss = new WebSocketServer({
+      port: WS_PORT,
+      host: "127.0.0.1",
+      maxPayload: MAX_PAYLOAD,
+    });
 
     this.wss.on("error", (err: NodeJS.ErrnoException) => {
       if (err.code === "EADDRINUSE") {
@@ -60,7 +65,20 @@ export class WsServer {
 
       ws.on("message", (raw) => {
         try {
-          const msg = JSON.parse(raw.toString()) as PluginToBridgeMessage;
+          const parsed = JSON.parse(raw.toString());
+          if (!parsed || typeof parsed !== "object" || typeof parsed.type !== "string") {
+            log("Invalid WS message: missing type");
+            return;
+          }
+          const msg = parsed as PluginToBridgeMessage;
+          if (msg.type === "chat_message" && typeof msg.text !== "string") {
+            log("Invalid chat_message: missing text");
+            return;
+          }
+          if (msg.type === "figma_response" && typeof msg.requestId !== "string") {
+            log("Invalid figma_response: missing requestId");
+            return;
+          }
           this.handleMessage(msg);
         } catch (e) {
           log("Failed to parse WS message:", e);

@@ -10,23 +10,41 @@
   gap: var(--spacing-400);
   padding: var(--spacing-800) var(--spacing-800) var(--spacing-800) 10px;
 }
-.status {
+
+.title {
   flex: 1;
+  min-width: 0;
+  font-family: var(--font-family-productive);
+  font-size: var(--font-size-small);
+  line-height: 18px;
+  color: var(--color-label-heavy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: var(--spacing-400);
+  flex-shrink: 0;
 }
-.statusIcon {
-  display: flex;
-  align-items: center;
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  flex-shrink: 0;
 }
+
 .connected {
-  color: var(--color-label-success);
+  background: var(--color-label-success);
 }
+
 .disconnected {
-  color: var(--color-label-error);
+  background: var(--color-label-error);
 }
+
 .label {
   font-family: var(--font-family-productive);
   font-size: var(--font-size-small);

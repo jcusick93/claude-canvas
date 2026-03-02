@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import cx from "classnames";
 import styles from "./Sidebar.module.css";
-import { SidebarIcon, PlusSmallIcon, MoreIcon, TrashIcon, LogoIcon } from "../Icons/Icons";
+import { SidebarIcon, PlusSmallIcon, MoreIcon, TrashIcon, LogoIcon, GitHubIcon, ArrowUpRightIcon } from "../Icons/Icons";
 import { IconButton } from "../IconButton/IconButton";
+import { CollapseList } from "./CollapseList";
 import type { ChatSession } from "../../types";
 
 interface SidebarProps {
@@ -26,6 +27,9 @@ export function Sidebar({
 }: SidebarProps) {
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const sortedSessions = sessions.slice().sort((a, b) => b.updatedAt - a.updatedAt);
+  const getSessionKey = useCallback((s: ChatSession) => s.id, []);
 
   // Close menu on outside click
   useEffect(() => {
@@ -58,12 +62,11 @@ export function Sidebar({
             {sessions.length === 0 ? (
               <div className={styles.empty}>No conversations yet</div>
             ) : (
-              sessions
-                .slice()
-                .sort((a, b) => b.updatedAt - a.updatedAt)
-                .map((session) => (
+              <CollapseList
+                items={sortedSessions}
+                getKey={getSessionKey}
+                renderItem={(session) => (
                   <div
-                    key={session.id}
                     className={cx(
                       styles.chatRow,
                       session.id === currentSessionId && styles.chatRowActive
@@ -98,18 +101,36 @@ export function Sidebar({
                       )}
                     </div>
                   </div>
-                ))
+                )}
+              />
             )}
           </div>
         </div>
         <div className={styles.footer}>
-          <button className={styles.newChatButton} onClick={onNewChat}>
+          <button className={styles.footerButton} onClick={onNewChat}>
             <span className={styles.iconContainer}>
               <span className={styles.stateLayer} />
-              <PlusSmallIcon className={styles.plusIcon} />
+              <PlusSmallIcon className={styles.footerIcon} />
             </span>
-            <span className={styles.newChatLabel}>New chat</span>
+            <span className={styles.footerLabel}>New chat</span>
           </button>
+          <a
+            className={styles.footerButton}
+            href="https://github.com/jcusick93/claude-canvas/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              parent.postMessage({ pluginMessage: { type: "open_external", url: "https://github.com/jcusick93/claude-canvas/issues" } }, "*");
+            }}
+          >
+            <span className={styles.iconContainer}>
+              <GitHubIcon className={styles.footerIconLg} />
+            </span>
+            <span className={styles.footerLabel}>Feedback</span>
+            <ArrowUpRightIcon className={styles.trailingIcon} />
+          </a>
+          <span className={styles.version}>Version 0.1.0</span>
         </div>
       </div>
     </>

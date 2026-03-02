@@ -56,7 +56,7 @@ figma.ui.onmessage = async (msg: {
 }) => {
   if (msg.type === "open_external") {
     const { url } = msg as unknown as { type: string; url: string };
-    if (url) figma.openExternal(url);
+    if (url && /^https?:\/\//.test(url)) figma.openExternal(url);
     return;
   }
 

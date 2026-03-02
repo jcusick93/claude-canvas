@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { MessageList } from "./components/MessageList/MessageList";
 import { InputArea } from "./components/InputArea/InputArea";
 import { Header } from "./components/Header/Header";
@@ -71,6 +71,14 @@ export function App() {
   );
 
   const { sendToFigma } = useFigmaBridge(handleFigmaResponse);
+
+  // Stop loading when connection drops
+  useEffect(() => {
+    if (!connected) {
+      setLoading(false);
+      setStatusLabel(null);
+    }
+  }, [connected]);
 
   // Handle incoming WS messages
   useEffect(() => {
@@ -167,9 +175,14 @@ export function App() {
     (m) => m.role === "user" || m.role === "assistant"
   );
 
+  const chatTitle = useMemo(() => {
+    const firstUser = messages.find((m) => m.role === "user");
+    return firstUser?.text || null;
+  }, [messages]);
+
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
-      <Header status={connected ? "connected" : "disconnected"} statusLabel={statusLabel} onToggleSidebar={handleToggleSidebar} />
+      <Header status={connected ? "connected" : "disconnected"} title={chatTitle} onToggleSidebar={handleToggleSidebar} />
       {isLanding ? (
         <Landing />
       ) : (

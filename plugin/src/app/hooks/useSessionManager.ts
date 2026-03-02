@@ -3,6 +3,7 @@ import { useFigmaStorage } from "./useFigmaStorage";
 import type { ChatMessage, ChatSession } from "../types";
 
 const SESSIONS_KEY = "claude_canvas_sessions";
+const MAX_SESSIONS = 20;
 
 export function useSessionManager() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -38,6 +39,10 @@ export function useSessionManager() {
           );
         } else {
           updated = [...prev, { id, title, messages, createdAt: now, updatedAt: now }];
+          if (updated.length > MAX_SESSIONS) {
+            updated.sort((a, b) => b.updatedAt - a.updatedAt);
+            updated = updated.slice(0, MAX_SESSIONS);
+          }
         }
         setItem(SESSIONS_KEY, updated).catch(() => {});
         return updated;

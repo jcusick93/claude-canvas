@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import cx from "classnames";
 import { marked } from "marked";
+import DOMPurify from "dompurify";
 import styles from "./Message.module.css";
 import { MessageActions } from "../MessageActions/MessageActions";
 import type { ChatMessage } from "../../types";
@@ -35,7 +36,7 @@ function copyToClipboard(text: string) {
 function renderMarkdown(text: string): string {
   const html = marked.parse(text);
   if (typeof html !== "string") return text;
-  return html;
+  return DOMPurify.sanitize(html);
 }
 
 const WORD_INTERVAL = 30; // ms between each word appearing
@@ -79,12 +80,16 @@ export function Message({ message: msg, onRetry }: MessageProps) {
   const isNew = msg.role === "assistant" && msg.isNew !== false;
   const words = useMemo(() => (isNew ? (msg.text.match(/\S+\s*/g) || []) : []), [isNew, msg.text]);
   const [showActions, setShowActions] = useState(!isNew);
+  const [animationDone, setAnimationDone] = useState(!isNew);
 
-  // Show actions after all words have revealed
+  // After all words revealed, switch to markdown and show actions
   useEffect(() => {
     if (!isNew) return;
     const totalTime = words.length * WORD_INTERVAL + ACTIONS_DELAY;
-    const timer = setTimeout(() => setShowActions(true), totalTime);
+    const timer = setTimeout(() => {
+      setAnimationDone(true);
+      setShowActions(true);
+    }, totalTime);
     return () => clearTimeout(timer);
   }, [isNew, words.length]);
 
@@ -105,7 +110,7 @@ export function Message({ message: msg, onRetry }: MessageProps) {
     return (
       <div className={styles.assistantWrapper}>
         <div className={cx(styles.msg, styles.assistant)}>
-          {isNew ? (
+          {isNew && !animationDone ? (
             <AnimatedText text={msg.text} onClick={handleClick} />
           ) : (
             <div

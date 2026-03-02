@@ -28,8 +28,8 @@ If you prefer to configure it yourself, add to `~/.claude.json`:
 {
   "mcpServers": {
     "claude-canvas": {
-      "command": "node",
-      "args": ["/path/to/node_modules/claude-canvas-mcp-server/dist/index.js"]
+      "command": "claude-canvas-mcp-server",
+      "args": []
     }
   }
 }

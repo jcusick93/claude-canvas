@@ -1,5 +1,8 @@
 # Claude Canvas
 
+[![npm version](https://img.shields.io/npm/v/claude-canvas-mcp-server?label=server)](https://www.npmjs.com/package/claude-canvas-mcp-server)
+[![plugin version](https://img.shields.io/github/package-json/v/jcusick93/claude-canvas?filename=plugin%2Fpackage.json&label=plugin)](https://github.com/jcusick93/claude-canvas/tree/main/plugin)
+
 Talk to Figma through Claude. Claude Canvas connects Claude Code to Figma via an MCP server and a Figma plugin, giving Claude direct access to read, create, and modify designs.
 
 ## How it works
